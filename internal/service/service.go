@@ -7,39 +7,34 @@ import (
 	"time"
 )
 
-type ApplyToCourierService interface {
-	Create(creq CreateOrderRequest) (*UniversalResponse, error)
-	Delete(OrderID int) (*UniversalResponse, error)
-}
-
 type ApplyService struct {
 	Database *sql.DB
 	Logger   *log.Logger
 }
 
-func NewApplyService(db *sql.DB, lg *log.Logger) *ApplyService {
+func NewApplyService(db *sql.DB, log *log.Logger) *ApplyService {
 	return &ApplyService{
 		Database: db,
-		Logger:   lg,
+		Logger:   log,
 	}
 }
 
-func (s *ApplyService) Create(creq CreateOrderRequest) (*UniversalResponse, error) {
-	FirstAddress, _ := json.Marshal(creq.FirstAddress)
-	SecondAddress, _ := json.Marshal(creq.SecondAddress)
+func (s *ApplyService) Create(req CreateOrderRequest) (*UniversalResponse, error) {
+	FirstAddress, _ := json.Marshal(req.FirstAddress)
+	SecondAddress, _ := json.Marshal(req.SecondAddress)
 
 	sql := `insert into Orders (AuthorID, DeliveryPrice, ItemCategory, 
 		ItemWeight, FirstAddressPhone, SecondAddressPhone, CreatedAt, FirstAddress, SecondAddress) 
 		values ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
-	_, err := s.Database.Exec(sql, creq.AuthorID, 300, creq.ItemCategory, creq.ItemWeight,
-		creq.FirstAddressPhone, creq.SecondAddressPhone, time.Now(), FirstAddress, SecondAddress)
+	_, err := s.Database.Exec(sql, req.AuthorID, 300, req.ItemCategory, req.ItemWeight,
+		req.FirstAddressPhone, req.SecondAddressPhone, time.Now(), FirstAddress, SecondAddress)
 
 	if err != nil {
 		return &UniversalResponse{
 			Response: "Ошибка при создании заказа",
 			Error:    err,
-		}, nil
+		}, err
 	}
 
 	return &UniversalResponse{
@@ -51,11 +46,12 @@ func (s *ApplyService) Create(creq CreateOrderRequest) (*UniversalResponse, erro
 func (s *ApplyService) Delete(OrderID int) (*UniversalResponse, error) {
 	sql := `delete from orders where orderid = $1`
 	_, err := s.Database.Exec(sql, OrderID)
+
 	if err != nil {
 		return &UniversalResponse{
 			Response: "Ошибка при удалении заказа",
 			Error:    err,
-		}, nil
+		}, err
 	}
 
 	return &UniversalResponse{
