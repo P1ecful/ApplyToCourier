@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// !FIXME migrations, order update, search order by author_ID
+// TODO: migrations, order update, search order by author_ID
 func main() {
 	logger := logging.NewLogger() // launching the logger
 
@@ -27,6 +27,7 @@ func main() {
 	}
 
 	logger.Println("INFO\t", "Succesful connection to Postgres")
+	//db.MakeMigrations() // migrations for postgres !FIXME
 
 	wApp := fiber.New()                                          // creating web setup app with fiber
 	applyservice := service.NewApplyService(database, logger)    // service setup
