@@ -26,15 +26,10 @@ func (wc *WebController) RegisterRouters() {
 			return err
 		}
 
-		createResult, err := wc.Serv.Create(req)
-
-		if err != nil {
-			return err
-		}
+		createResult := wc.Serv.Create(req)
 
 		return c.JSON(&service.UniversalResponse{
 			Response: createResult.Response,
-			Error:    createResult.Error,
 		})
 
 	})
@@ -45,15 +40,10 @@ func (wc *WebController) RegisterRouters() {
 			return err
 		}
 
-		deleteResult, err := wc.Serv.Delete(req.OrderID)
-
-		if err != nil {
-			return err
-		}
+		deleteResult := wc.Serv.Delete(req.OrderID)
 
 		return c.JSON(&service.UniversalResponse{
 			Response: deleteResult.Response,
-			Error:    err,
 		})
 
 	})

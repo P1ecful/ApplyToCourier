@@ -3,16 +3,17 @@ package main
 import (
 	"applytocourier/internal/config"
 	"applytocourier/internal/db"
-	"applytocourier/internal/logging"
 	"applytocourier/internal/service"
 	"applytocourier/web"
+	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-// TODO: migrations, order update, search order by author_ID
+// TODO: order update, search order by author_ID, returning id with response
 func main() {
-	logger := logging.NewLogger() // launching the logger
+	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime) // launching the logger
 
 	database, err := db.NewPostgresConnection(&config.PostgresConnection{
 		Host:     "localhost",
@@ -23,16 +24,16 @@ func main() {
 	}) // database connection
 
 	if err != nil {
-		logger.Fatal("INFO\t", "Error to connect Postgres")
+		logger.Fatal("Error to connect Postgres")
 	}
 
-	logger.Println("INFO\t", "Succesful connection to Postgres")
-	//db.MakeMigrations() // migrations for postgres !FIXME
+	logger.Println("Succesful connection to Postgres")
 
 	wApp := fiber.New()                                          // creating web setup app with fiber
 	applyservice := service.NewApplyService(database, logger)    // service setup
 	controller := web.CreateNewWebController(wApp, applyservice) // lauching controller setup
 	controller.RegisterRouters()                                 // registration routes
 
+	defer database.Close()
 	logger.Fatal(wApp.Listen(":1200"))
 }

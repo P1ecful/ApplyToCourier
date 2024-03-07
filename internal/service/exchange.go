@@ -22,5 +22,4 @@ type UpdateOrderRequest struct {
 
 type UniversalResponse struct {
 	Response string `json:"response"`
-	Error    error  `json:"error"`
 }

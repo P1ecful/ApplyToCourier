@@ -4,9 +4,7 @@ import (
 	"applytocourier/internal/config"
 	"database/sql"
 	"fmt"
-	"log"
 
-	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/lib/pq"
 )
 
@@ -20,19 +18,4 @@ func NewPostgresConnection(cfg *config.PostgresConnection) (*sql.DB, error) {
 	}
 
 	return db, err
-}
-
-// !FIXME
-func MakeMigrations() {
-	migrate, err := migrate.New(
-		"file://db/ApplyToCourier",
-		"postgres://postgres:postgres@localhost:5432/example?sslmode=disable")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := migrate.Up(); err != nil {
-		log.Fatal(err)
-	}
 }
