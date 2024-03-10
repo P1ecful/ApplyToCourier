@@ -11,21 +11,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// TODO: order update, search order by author_ID, returning id with response
+// TODO: order update, search order by author_ID
 func main() {
 	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime) // launching the logger
 
-	database, err := db.NewPostgresConnection(&config.PostgresConnection{
+	database := db.NewPostgresConnection(&config.PostgresConnection{
 		Host:     "localhost",
 		Port:     5432,
 		Database: "ApplyToCourier",
-		Password: "postgres",
+		Password: "p1ecful",
 		Username: "postgres",
-	}) // database connection
-
-	if err != nil {
-		logger.Fatal("Error to connect Postgres")
-	}
+	}, logger) // database connection
 
 	logger.Println("Succesful connection to Postgres")
 

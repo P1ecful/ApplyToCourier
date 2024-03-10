@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"time"
 )
@@ -20,27 +21,17 @@ func NewApplyService(db *sql.DB, log *log.Logger) *ApplyService {
 }
 
 func (s *ApplyService) Create(req CreateOrderRequest) *UniversalResponse {
-	//var id int
-	sql := `insert into Orders (AuthorID, DeliveryPrice, ItemCategory, 
+	sql := `insert into orders (AuthorID, DeliveryPrice, ItemCategory, 
 		ItemWeight, FirstAddressPhone, SecondAddressPhone, CreatedAt, FirstAddress, SecondAddress) 
-		values ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`
+		values ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING orderid`
 
+	var id int
 	FirstAddress, _ := json.Marshal(req.FirstAddress)
 	SecondAddress, _ := json.Marshal(req.SecondAddress)
 
-	// if err := s.Database.QueryRow(sql, req.AuthorID, 300, req.ItemCategory, req.ItemWeight,
-	// 	req.FirstAddressPhone, req.SecondAddressPhone, time.Now(),
-	// 	FirstAddress, SecondAddress).Scan(&id); err != nil {
-	// 	return &UniversalResponse{
-	// 		Response: "Error with creating order",
-	// 	}
-	// }
-
-	_, err := s.Database.Exec(sql, req.AuthorID, 300, req.ItemCategory, req.ItemWeight,
-		req.FirstAddressPhone, req.SecondAddressPhone, time.Now(), FirstAddress, SecondAddress)
-
-	if err != nil {
-		s.Logger.Println(err)
+	if err := s.Database.QueryRow(sql, req.AuthorID, 300, req.ItemCategory, req.ItemWeight,
+		req.FirstAddressPhone, req.SecondAddressPhone, time.Now(),
+		FirstAddress, SecondAddress).Scan(&id); err != nil {
 
 		return &UniversalResponse{
 			Response: "Error with creating order",
@@ -48,13 +39,13 @@ func (s *ApplyService) Create(req CreateOrderRequest) *UniversalResponse {
 	}
 
 	return &UniversalResponse{
-		Response: "Order created",
+		Response: fmt.Sprintf("Order %d created", id),
 	}
 }
 
-func (s *ApplyService) Delete(OrderID int) *UniversalResponse {
+func (s *ApplyService) Delete(OrderId int) *UniversalResponse {
 	sql := `delete from orders where orderid = $1`
-	_, err := s.Database.Exec(sql, OrderID)
+	_, err := s.Database.Exec(sql, OrderId)
 
 	if err != nil {
 		return &UniversalResponse{
