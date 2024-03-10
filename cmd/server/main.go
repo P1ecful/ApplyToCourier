@@ -4,7 +4,7 @@ import (
 	"applytocourier/internal/config"
 	"applytocourier/internal/db"
 	"applytocourier/internal/service"
-	"applytocourier/web"
+	"applytocourier/internal/web"
 	"log"
 	"os"
 

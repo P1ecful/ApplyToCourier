@@ -21,7 +21,7 @@ func CreateNewWebController(app *fiber.App, serv *service.ApplyService) *WebCont
 // service router
 func (wc *WebController) RegisterRouters() {
 	wc.App.Get("/create", func(c *fiber.Ctx) error {
-		var req service.CreateOrderRequest
+		var req service.CreateOrUpdateRequest
 		if err := c.BodyParser(&req); err != nil {
 			return err
 		}
@@ -35,7 +35,7 @@ func (wc *WebController) RegisterRouters() {
 	})
 
 	wc.App.Get("/delete", func(c *fiber.Ctx) error {
-		var req service.DeleteOrderRequest
+		var req service.DeleteRequest
 		if err := c.BodyParser(&req); err != nil {
 			return err
 		}
