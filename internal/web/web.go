@@ -18,7 +18,7 @@ func CreateNewWebController(app *fiber.App, serv *service.ApplyService) *WebCont
 	}
 }
 
-// service router
+// service's handlers
 func (wc *WebController) RegisterRouters() {
 	wc.App.Get("/create", func(c *fiber.Ctx) error {
 		var req service.CreateOrUpdateRequest
@@ -26,11 +26,7 @@ func (wc *WebController) RegisterRouters() {
 			return err
 		}
 
-		createResult := wc.Serv.Create(req)
-
-		return c.JSON(&service.UniversalResponse{
-			Response: createResult.Response,
-		})
+		return c.JSON(wc.Serv.Create(req))
 
 	})
 
@@ -40,11 +36,15 @@ func (wc *WebController) RegisterRouters() {
 			return err
 		}
 
-		deleteResult := wc.Serv.Delete(req.OrderID)
+		return c.JSON(wc.Serv.Delete(req.OrderID))
+	})
 
-		return c.JSON(&service.UniversalResponse{
-			Response: deleteResult.Response,
-		})
+	wc.App.Get("/Get", func(c *fiber.Ctx) error {
+		var req service.GetByCreatorRequest
+		if err := c.BodyParser(&req); err != nil {
+			return err
+		}
 
+		return c.JSON(wc.Serv.GetByCreatorID(req.CreatorID))
 	})
 }

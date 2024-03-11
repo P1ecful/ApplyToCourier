@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// TODO: order update, search order by author_ID
+// Fix get by creator method, add checker for order id, change json strings
 func main() {
 	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime) // launching the logger
 

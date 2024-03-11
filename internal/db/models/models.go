@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Order struct {
-	AuthorID           int       `json:"author id"`
+	CreatorID          int       `json:"creator id"`
 	OrderID            int       `json:"order id"`
 	DeliveryPrice      int       `json:"price"`
 	ItemCategory       string    `json:"item category"`
