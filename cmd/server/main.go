@@ -15,7 +15,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// add checker for order id
 func main() {
 	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime) // launching the logger
 

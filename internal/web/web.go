@@ -23,6 +23,7 @@ func CreateNewWebController(app *fiber.App, serv *service.ApplyService, log *log
 
 // service's handlers
 func (wc *WebController) RegisterRouters() {
+	// http://127.0.0.1:1200/create
 	wc.app.Get("/create", func(c *fiber.Ctx) error {
 		var req service.CreateOrUpdateRequest
 		if err := c.BodyParser(&req); err != nil {
@@ -33,8 +34,9 @@ func (wc *WebController) RegisterRouters() {
 
 	})
 
+	// http://127.0.0.1:1200/delete
 	wc.app.Get("/delete", func(c *fiber.Ctx) error {
-		var req service.DeleteRequest
+		var req service.OrderRequest
 		if err := c.BodyParser(&req); err != nil {
 			wc.log.Fatal(err)
 		}
@@ -42,12 +44,25 @@ func (wc *WebController) RegisterRouters() {
 		return c.JSON(wc.serv.Delete(req.OrderID))
 	})
 
+	// http://127.0.0.1:1200/get-creator
 	wc.app.Get("/get-creator", func(c *fiber.Ctx) error {
-		var req service.GetByCreatorRequest
+		var req service.GetCreatorRequest
 		if err := c.BodyParser(&req); err != nil {
 			wc.log.Fatal(err)
 		}
 
 		return c.JSON(wc.serv.GetWithCreatorID(req.CreatorID))
 	})
+
+	// http://127.0.0.1:1200/get-order
+	wc.app.Get("/get-order", func(c *fiber.Ctx) error {
+		var req service.OrderRequest
+
+		if err := c.BodyParser(&req); err != nil {
+			wc.log.Fatal(err)
+		}
+
+		return c.JSON(wc.serv.GetWithOrderID(req.OrderID))
+	})
+
 }

@@ -33,11 +33,11 @@ type CreateOrUpdateRequest struct {
 	SecondAddress      models.Address `json:"Second Address"`
 }
 
-type DeleteRequest struct {
+type OrderRequest struct {
 	OrderID int `json:"Order Id"`
 }
 
-type GetByCreatorRequest struct {
+type GetCreatorRequest struct {
 	CreatorID int `json:"Creator Id"`
 }
 
@@ -63,13 +63,7 @@ func (s *ApplyService) Create(req CreateOrUpdateRequest) *Response {
 	_, err := s.database.Exec(sql, generatedID, req.CreatorID, 300, req.ItemCategory, req.ItemWeight, req.FirstAddressPhone, req.SecondAddressPhone, time.Now(), FirstAddress, SecondAddress)
 
 	if err != nil { // error response
-		s.log.Print("Error while inserting to db")
-
-		return &Response{
-			OK:     false,
-			Method: "create",
-			Error:  err,
-		}
+		s.log.Printf("Error while inserting to db. %s", err)
 	}
 
 	return &Response{
@@ -83,13 +77,7 @@ func (s *ApplyService) Delete(orderid int) *Response {
 	_, err := s.database.Exec(`delete from orders where orderid = $1`, orderid)
 
 	if err != nil {
-		s.log.Print("Error with deleting from db")
-
-		return &Response{ // error response
-			OK:     false,
-			Method: "delete",
-			Error:  err,
-		}
+		s.log.Printf("Error with deleting from db. %s", err)
 	}
 
 	return &Response{
@@ -107,13 +95,7 @@ func (s *ApplyService) GetWithCreatorID(creatorid int) *Response {
 	rows, err := s.database.Query(sql, creatorid)
 
 	if err != nil {
-		s.log.Println("Error while selecting from db")
-
-		return &Response{ // error response
-			OK:     false,
-			Method: "get",
-			Error:  err,
-		}
+		s.log.Printf("Error while selecting by CreatorID from db. %s", err)
 	}
 
 	// add the found ID to the array
@@ -124,7 +106,23 @@ func (s *ApplyService) GetWithCreatorID(creatorid int) *Response {
 
 	return &Response{
 		OK:       true,
-		Method:   "get",
+		Method:   "get-creator",
 		Response: (fmt.Sprint(collection)),
 	}
+}
+
+func (s *ApplyService) GetWithOrderID(orderid int) *models.Order {
+	var order *models.Order = &models.Order{}
+	var firstaddress, secondaddress []byte // addresses in json-view
+	sql := `select * from orders where orderid = $1`
+
+	if err := s.database.QueryRow(sql, orderid).Scan(&order.OrderID, &order.CreatorID, &order.DeliveryPrice, &order.ItemCategory, &order.ItemWeight, &order.FirstAddressPhone, &order.SecondAddressPhone, &order.CreatedAt, &firstaddress, &secondaddress); err != nil {
+		s.log.Printf("Error while scaning order. %s", err)
+	}
+
+	// unmarshaling addresses
+	json.Unmarshal(firstaddress, &order.FirstAddress)
+	json.Unmarshal(secondaddress, &order.SecondAddress)
+
+	return order
 }
