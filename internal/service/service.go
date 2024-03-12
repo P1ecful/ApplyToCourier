@@ -11,45 +11,45 @@ import (
 )
 
 type ApplyService struct {
-	Database *sql.DB
-	Logger   *log.Logger
+	database *sql.DB
+	log      *log.Logger
 }
 
 func NewApplyService(db *sql.DB, log *log.Logger) *ApplyService {
 	return &ApplyService{
-		Database: db,
-		Logger:   log,
+		database: db,
+		log:      log,
 	}
 }
 
 // Requests and Responses
 type CreateOrUpdateRequest struct {
-	CreatorID          int            `json:"creator id"`
-	ItemCategory       string         `json:"item category"`
-	ItemWeight         string         `json:"item weight"`
-	FirstAddressPhone  string         `json:"first address phone"`
-	SecondAddressPhone string         `json:"second address phone"`
-	FirstAddress       models.Address `json:"first address"`
-	SecondAddress      models.Address `json:"second address"`
+	CreatorID          int            `json:"Creator Id"`
+	ItemCategory       string         `json:"Item Category"`
+	ItemWeight         string         `json:"Item Weight"`
+	FirstAddressPhone  string         `json:"First Address Phone"`
+	SecondAddressPhone string         `json:"Second Address Phone"`
+	FirstAddress       models.Address `json:"First Address"`
+	SecondAddress      models.Address `json:"Second Address"`
 }
 
 type DeleteRequest struct {
-	OrderID int `json:"order id"`
+	OrderID int `json:"Order Id"`
 }
 
 type GetByCreatorRequest struct {
-	CreatorID int `json:"creator id"`
+	CreatorID int `json:"Creator Id"`
 }
 
-type UniversalResponse struct {
+type Response struct {
 	OK       bool   `json:"OK"`
-	Response string `json:"Response"`
 	Method   string `json:"Method"`
 	Error    error  `json:"Error"`
+	Response string `json:"Response"`
 }
 
-// Services
-func (s *ApplyService) Create(req CreateOrUpdateRequest) *UniversalResponse {
+// Services methods
+func (s *ApplyService) Create(req CreateOrUpdateRequest) *Response {
 	generatedID := rand.Intn(999999-100000) + 100000 // generating ID for order
 
 	// Marshalization addresses to JSON format
@@ -60,52 +60,71 @@ func (s *ApplyService) Create(req CreateOrUpdateRequest) *UniversalResponse {
 		ItemWeight, FirstAddressPhone, SecondAddressPhone, CreatedAt, FirstAddress, SecondAddress) 
 		values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
 
-	_, err := s.Database.Exec(sql, generatedID, req.CreatorID, 300, req.ItemCategory, req.ItemWeight, req.FirstAddressPhone, req.SecondAddressPhone, time.Now(), FirstAddress, SecondAddress)
+	_, err := s.database.Exec(sql, generatedID, req.CreatorID, 300, req.ItemCategory, req.ItemWeight, req.FirstAddressPhone, req.SecondAddressPhone, time.Now(), FirstAddress, SecondAddress)
 
 	if err != nil { // error response
-		return &UniversalResponse{
-			OK:       false,
-			Response: "Error with creating order",
-			Method:   "create",
-			Error:    err,
+		s.log.Print("Error while inserting to db")
+
+		return &Response{
+			OK:     false,
+			Method: "create",
+			Error:  err,
 		}
 	}
 
-	return &UniversalResponse{
+	return &Response{
 		OK:       true,
-		Response: fmt.Sprintf("Order %d created", generatedID),
 		Method:   "create",
-		Error:    err,
+		Response: fmt.Sprintf("Order %d created", generatedID),
 	}
 }
 
-func (s *ApplyService) Delete(orderid int) *UniversalResponse {
-	_, err := s.Database.Exec(`delete from orders where orderid = $1`, orderid)
+func (s *ApplyService) Delete(orderid int) *Response {
+	_, err := s.database.Exec(`delete from orders where orderid = $1`, orderid)
 
 	if err != nil {
-		return &UniversalResponse{ // error response
-			OK:       false,
-			Response: fmt.Sprintf("Order %d wasn't deleted", orderid),
-			Method:   "delete",
-			Error:    err,
+		s.log.Print("Error with deleting from db")
+
+		return &Response{ // error response
+			OK:     false,
+			Method: "delete",
+			Error:  err,
 		}
 	}
 
-	return &UniversalResponse{
+	return &Response{
 		OK:       true,
-		Response: fmt.Sprintf("Order %d was deleted", orderid),
 		Method:   "delete",
-		Error:    err,
+		Response: fmt.Sprintf("Order %d was deleted", orderid),
 	}
 }
 
-func (s *ApplyService) GetByCreatorID(creatorid int) *models.Order { // !FIXME
-	var order *models.Order
-	sql := `select * from orders where creatorid = $1`
+func (s *ApplyService) GetWithCreatorID(creatorid int) *Response {
+	var id int
+	collection := []int{} // array for database records
+	sql := `select orderid from orders where creatorid = $1`
 
-	if err := s.Database.QueryRow(sql, creatorid).Scan(&order); err != nil {
-		s.Logger.Fatal(err)
+	rows, err := s.database.Query(sql, creatorid)
+
+	if err != nil {
+		s.log.Println("Error while selecting from db")
+
+		return &Response{ // error response
+			OK:     false,
+			Method: "get",
+			Error:  err,
+		}
 	}
 
-	return order
+	// add the found ID to the array
+	for rows.Next() {
+		rows.Scan(&id)
+		collection = append(collection, id)
+	}
+
+	return &Response{
+		OK:       true,
+		Method:   "get",
+		Response: (fmt.Sprint(collection)),
+	}
 }

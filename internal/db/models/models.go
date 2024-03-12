@@ -3,24 +3,24 @@ package models
 import "time"
 
 type Order struct {
-	CreatorID          int       `json:"creator id"`
-	OrderID            int       `json:"order id"`
-	DeliveryPrice      int       `json:"price"`
-	ItemCategory       string    `json:"item category"`
-	ItemWeight         string    `json:"item weight"`
-	FirstAddressPhone  string    `json:"first address phone"`
-	SecondAddressPhone string    `json:"second address phone"`
-	FirstAddress       Address   `json:"first address"`
-	SecondAddress      Address   `json:"second address"`
-	CreatedAt          time.Time `json:"createdAt"`
+	CreatorID          int       `json:"Creator Id"`
+	OrderID            int       `json:"Order Id"`
+	DeliveryPrice      int       `json:"Price"`
+	ItemCategory       string    `json:"Item Category"`
+	ItemWeight         string    `json:"Item Weight"`
+	FirstAddressPhone  string    `json:"First Address Phone"`
+	SecondAddressPhone string    `json:"Second Address Phone"`
+	FirstAddress       Address   `json:"First Address"`
+	SecondAddress      Address   `json:"Second Address"`
+	CreatedAt          time.Time `json:"Created At"`
 }
 
 type Address struct {
-	Street       string `json:"street"`
-	Home         int    `json:"home"`
-	Housing      int    `json:"housing"`
-	Entrance     int    `json:"enrance"`
-	Floor        int    `json:"floor"`
-	Flat         int    `json:"flat"`
-	IntercomCode string `json:"intercom code"`
+	Street       string `json:"Street"`
+	Home         int    `json:"Home"`
+	Housing      int    `json:"Housing"`
+	Entrance     int    `json:"Enrance"`
+	Floor        int    `json:"Floor"`
+	Flat         int    `json:"Flat"`
+	IntercomCode string `json:"Intercom Code"`
 }

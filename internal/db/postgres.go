@@ -9,13 +9,24 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func NewPostgresConnection(cfg *config.PostgresConnection, logger *log.Logger) *sql.DB {
-	db, err := sql.Open("postgres",
-		fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-			cfg.Host, cfg.Port, cfg.Username, cfg.Password, cfg.Database))
+type Repository struct {
+	config *config.PostgresConnection
+	log    *log.Logger
+}
+
+func NewRepository(cfg *config.PostgresConnection, log *log.Logger) *Repository {
+	return &Repository{
+		config: cfg,
+		log:    log,
+	}
+}
+
+func (r *Repository) Connect() *sql.DB {
+	db, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		r.config.Host, r.config.Port, r.config.Username, r.config.Password, r.config.Database))
 
 	if err != nil {
-		logger.Fatal(err)
+		r.log.Print(err)
 	}
 
 	return db
