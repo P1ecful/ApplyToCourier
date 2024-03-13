@@ -19,11 +19,11 @@ func main() {
 	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime) // launching the logger
 
 	database := db.NewRepository(&config.PostgresConnection{
-		Host:     "localhost",
-		Port:     5432,
-		Database: "ApplyToCourier",
-		Password: "p1ecful",
-		Username: "postgres",
+		Host:     os.Getenv("POSTGRES_HOST"),
+		Port:     os.Getenv("POSTGRES_PORT"),
+		Database: os.Getenv("POSTGRES_DB"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
+		Username: os.Getenv("POSTGRES_USER"),
 	}, logger).Connect() // database connection
 
 	logger.Println("Succesful connection to Postgres")

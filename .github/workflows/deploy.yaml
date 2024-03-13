@@ -1,0 +1,57 @@
+name: Apply To Courier
+
+on:
+    push:
+      branches: [main]
+    pull_request:
+      branches: [main]
+
+jobs: 
+
+    build:
+        runs-on: ubuntu-20.04
+
+        services:
+            postgres: 
+                image: postgres:16
+                env:
+                    POSTGRES_HOST: localhost
+                    POSTGRES_USER: "$USER"
+                    POSTGRES_PASSWORD: "$PASSWORD"
+                    POSTGRES_DB: "$DATABASE"
+                    POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+
+                ports:
+                    - 5432:5432
+
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Go
+              uses: actions/setup-go@v2
+              with: 
+                go-version: 1.21.0
+
+            - name: Set up migrate-tool
+              run: curl -L https://github.com/golang-migrate/migrate/releases/download/$version/migrate.$os-$arch.tar.gz | tar xvz
+
+            - name: Migrate database
+              env:
+                  POSTGRES_USER: "$USER"
+                  POSTGRES_PASSWORD: "$PASSWORD"
+                  POSTGRES_DB: "$DATABASE"
+                  POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+
+              run: migrate -database postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:${{ env.POSTGRES_PORT }}/${{ env.POSTGRES_DB }}?sslmode=disable -path migrations up
+
+            - name: Build app
+              run: 
+                go mod download
+                go build -v ./cmd/server/main.go
