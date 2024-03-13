@@ -16,9 +16,9 @@ jobs:
                 image: postgres:16
                 env:
                     POSTGRES_HOST: localhost
-                    POSTGRES_USER: "$USER"
-                    POSTGRES_PASSWORD: "$PASSWORD"
-                    POSTGRES_DB: "$DATABASE"
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: p1ecful
+                    POSTGRES_DB: ApplyToCourier
                     POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
 
                 ports:
@@ -39,19 +39,7 @@ jobs:
               with: 
                 go-version: 1.21.0
 
-            - name: Set up migrate-tool
-              run: curl -L https://github.com/golang-migrate/migrate/releases/download/$version/migrate.$os-$arch.tar.gz | tar xvz
-
-            - name: Migrate database
-              env:
-                  POSTGRES_USER: "$USER"
-                  POSTGRES_PASSWORD: "$PASSWORD"
-                  POSTGRES_DB: "$DATABASE"
-                  POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
-
-              run: migrate -database postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@localhost:${{ env.POSTGRES_PORT }}/${{ env.POSTGRES_DB }}?sslmode=disable -path migrations up
-
             - name: Build app
-              run: 
+              run: |
                 go mod download
-                go build -v ./cmd/server/main.go
+                go build -o ApplyToCourier ./cmd/server/main.go
