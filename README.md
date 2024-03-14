@@ -8,6 +8,7 @@ The following functions are a set for creating this web APIs:
 ## Start Application
   - Clone this repository
   - Create a postgres database. See table code [here](migration/000001_create_applycourier_table.up.sql).
+  - Change Data in `config/local.env`
   - Run the application: `go run main.go`
 
 ## API Routes

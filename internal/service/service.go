@@ -63,7 +63,7 @@ func (s *ApplyService) Create(req CreateOrUpdateRequest) *Response {
 	_, err := s.database.Exec(sql, generatedID, req.CreatorID, 300, req.ItemCategory, req.ItemWeight, req.FirstAddressPhone, req.SecondAddressPhone, time.Now(), FirstAddress, SecondAddress)
 
 	if err != nil { // error response
-		s.log.Printf("Error while inserting to db. %s", err)
+		s.log.Fatalf("Error while inserting to db. %s", err)
 	}
 
 	return &Response{
@@ -77,7 +77,7 @@ func (s *ApplyService) Delete(orderid int) *Response {
 	_, err := s.database.Exec(`delete from orders where orderid = $1`, orderid)
 
 	if err != nil {
-		s.log.Printf("Error with deleting from db. %s", err)
+		s.log.Fatalf("Error with deleting from db. %s", err)
 	}
 
 	return &Response{
@@ -95,7 +95,7 @@ func (s *ApplyService) GetWithCreatorID(creatorid int) *Response {
 	rows, err := s.database.Query(sql, creatorid)
 
 	if err != nil {
-		s.log.Printf("Error while selecting by CreatorID from db. %s", err)
+		s.log.Fatalf("Error while selecting by CreatorID from db. %s", err)
 	}
 
 	// add the found ID to the array
@@ -117,7 +117,7 @@ func (s *ApplyService) GetWithOrderID(orderid int) *models.Order {
 	sql := `select * from orders where orderid = $1`
 
 	if err := s.database.QueryRow(sql, orderid).Scan(&order.OrderID, &order.CreatorID, &order.DeliveryPrice, &order.ItemCategory, &order.ItemWeight, &order.FirstAddressPhone, &order.SecondAddressPhone, &order.CreatedAt, &firstaddress, &secondaddress); err != nil {
-		s.log.Printf("Error while scaning order. %s", err)
+		s.log.Fatalf("Error while scaning order. %s", err)
 	}
 
 	// unmarshaling addresses

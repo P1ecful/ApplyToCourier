@@ -13,18 +13,19 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
-func main() {
-	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime) // launching the logger
+// loads values from .env
+func init() {
+	if err := godotenv.Load("config/local.env"); err != nil {
+		log.Print("No .env file found")
+	}
+}
 
-	database := db.NewRepository(&config.PostgresConnection{
-		Host:     os.Getenv("POSTGRES_HOST"),
-		Port:     os.Getenv("POSTGRES_PORT"),
-		Database: os.Getenv("POSTGRES_DB"),
-		Password: os.Getenv("POSTGRES_PASSWORD"),
-		Username: os.Getenv("POSTGRES_USER"),
-	}, logger).Connect() // database connection
+func main() {
+	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)              // launching the logger
+	database := db.NewRepository(config.LoadPostgresEnv(), logger).Connect() // database connection
 
 	logger.Println("Succesful connection to Postgres")
 

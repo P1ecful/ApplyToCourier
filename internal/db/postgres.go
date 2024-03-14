@@ -22,11 +22,11 @@ func NewRepository(cfg *config.PostgresConnection, log *log.Logger) *Repository 
 }
 
 func (r *Repository) Connect() *sql.DB {
-	db, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+	db, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		r.config.Host, r.config.Port, r.config.Username, r.config.Password, r.config.Database))
 
 	if err != nil {
-		r.log.Print(err)
+		r.log.Fatal(err)
 	}
 
 	return db
