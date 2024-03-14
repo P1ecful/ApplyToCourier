@@ -62,7 +62,7 @@ func (s *ApplyService) Create(req CreateOrUpdateRequest) *Response {
 
 	_, err := s.database.Exec(sql, generatedID, req.CreatorID, 300, req.ItemCategory, req.ItemWeight, req.FirstAddressPhone, req.SecondAddressPhone, time.Now(), FirstAddress, SecondAddress)
 
-	if err != nil { // error response
+	if err != nil {
 		s.log.Fatalf("Error while inserting to db. %s", err)
 	}
 
