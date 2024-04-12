@@ -24,8 +24,14 @@ func init() {
 }
 
 func main() {
-	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)              // launching the logger
-	database := db.NewRepository(config.LoadPostgresEnv(), logger).Connect() // database connection
+	logger := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime) // launching the logger
+	database := db.NewRepository(&config.PostgresConnection{    // database connection
+		Host:     os.Getenv("POSTGRES_HOST"),
+		Port:     os.Getenv("POSTGRES_PORT"),
+		Database: os.Getenv("POSTGRES_DB"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
+		Username: os.Getenv("POSTGRES_USER"),
+	}, logger).Connect()
 
 	logger.Println("Succesful connection to Postgres")
 
