@@ -35,7 +35,7 @@ func (wc *WebController) RegisterRouters() {
 	})
 
 	// http://127.0.0.1:1200/delete
-	wc.app.Post("/delete", func(c *fiber.Ctx) error {
+	wc.app.Delete("/delete", func(c *fiber.Ctx) error {
 		var req service.OrderRequest
 		if err := c.BodyParser(&req); err != nil {
 			wc.log.Fatal(err)
@@ -45,7 +45,7 @@ func (wc *WebController) RegisterRouters() {
 	})
 
 	// http://127.0.0.1:1200/get-creator
-	wc.app.Post("/get-creator", func(c *fiber.Ctx) error {
+	wc.app.Get("/get-by-creator", func(c *fiber.Ctx) error {
 		var req service.GetCreatorRequest
 		if err := c.BodyParser(&req); err != nil {
 			wc.log.Fatal(err)
@@ -55,7 +55,7 @@ func (wc *WebController) RegisterRouters() {
 	})
 
 	// http://127.0.0.1:1200/get-order
-	wc.app.Post("/get-order", func(c *fiber.Ctx) error {
+	wc.app.Get("/get-order", func(c *fiber.Ctx) error {
 		var req service.OrderRequest
 
 		if err := c.BodyParser(&req); err != nil {
