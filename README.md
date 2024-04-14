@@ -15,9 +15,9 @@ The following functions are a set for creating this web APIs:
 | Path          | Method | Request                       |  Desription                                           |                                    
 | ------------- | ------ | ----------------------------- | ----------------------------------------------------- |
 | /create       | POST   |  { "Creator Id": 0, "Item category": "", "Item weight": "", "First Address Phone": "", "Second Address Phone": "", "First Address": { "Street": "",  "Home": 0, "Housing": 0, "Entrance": 0,"Floor": 0, "Flat": 0, "Intercom Code": ""}, "Second Address": { "Street": "",  "Home": 0, "Housing": 0,  "Entrance": 0, "Floor": 0,  "Flat": 0, "Intercom Code": ""}}                             | Create order in response you wil get ID of your order |   
-| /delete       | POST   | { "Order Id": 0 }             | Delete order by order ID                                    |     
-| /get-by-creator  | POST   | { "Creator Id": 0 }           | Get order by Creator ID                               |   
-| /get-order    | POST   | { "Order Id": 768933 }        | Get order by order ID                                 |
+| /delete       | DELETE   | { "Order Id": 0 }             | Delete order by order ID                                    |     
+| /get-by-creator  | GET   | { "Creator Id": 0 }           | Get order by Creator ID                               |   
+| /get-order    | GET   | { "Order Id": 768933 }        | Get order by order ID                                 |
 
 ###### In development...
 
